@@ -5,7 +5,9 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import redirects
+from .models import Golfer, FavoriteGolfer
+from .forms import FavoriteGolferForm
+
 
 #Here we are using djangos's built in authentication to handle form login, this form will handle authentication
 def login_view(request):
@@ -40,7 +42,28 @@ def signup(request):
 def dashboard(request):
     return render(request, 'accounts/dashboard.html')
 
-
+@login_required
+def golfers_list(request):
+    #fetch all golfers
+    golfers = Golfer.objects.all()
+    #fetch the users favorite golfers ordered 1-6
+    favorites = FavoriteGolfer.objects.filter(user=request.user).order_by('rank')
+    if request.method == 'POST':
+        for rank in range(1,6):
+            golfer_id = request.POST.get(f'golfer_{rank}') #get golfer id from form
+            if golfer_id:
+                golfer = Golfer.objects.get(id=golfer_id)
+                #Create or update the favorite golfer
+                favorite, created = FavoriteGolfer.objects.get_or_create(user=request.user, rank=rank)
+                favorite.golfer = golfer
+                favorite.save()
+        return render(request, 'accounts:dashboard')
+    
+    return render(request, 'accounts/dashboard.html', {
+        'golfers': golfers, #list of all golfers
+        'favorites': favorites, #list of favoriites
+    })
+                
 
 
 

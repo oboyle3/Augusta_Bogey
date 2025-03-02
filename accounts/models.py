@@ -18,12 +18,8 @@ class Golfer(models.Model):
 class FavoriteGolfer(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE) #Link to user model
     golfer = models.ForeignKey(Golfer, on_delete=models.CASCADE) #LINK to golfer model
-    rank = models.IntegerField() #Rank 1 - 6 for top golfers
-
-    class Meta:
-        unique_together = ['user', 'rank'] #Ensure a user can only set 1 golfer per rank
 
     def __str__(self):
-        return f"{self.user.username}'s favorite golfer"
+        return f"{self.user.username}'s favorite golfer {self.golfer.name}"
 
     

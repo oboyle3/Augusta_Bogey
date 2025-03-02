@@ -68,9 +68,20 @@ def golfers_list(request):
 def dashboard(request):
     #fetch all the golfers from the database
     golfers = Golfer.objects.all()
+    FavoriteGolfer = None
     print(golfers)
+    #get the current users fav golfer
+    try:
+        favorite_golfer = FavoriteGolfer.objects.get(user=request.user)
+    except FavoriteGolfer.DoesNotExist:
+        favorite_golfer = None
+
+        
     #pass the golfers to the template
-    return render(request, 'accounts/dashboard.html', {'golfers': golfers})
+    return render(request, 'accounts/dashboard.html', {
+        'golfers': golfers,
+        'favorite_golfer': FavoriteGolfer #Pass the favorite golfer to the template    
+    })
     
                 
 

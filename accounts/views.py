@@ -41,7 +41,7 @@ def signup(request):
 @login_required
 def dashboard(request):
     return render(request, 'accounts/dashboard.html')
-
+'''
 @login_required
 def golfers_list(request):
     #fetch all golfers
@@ -63,6 +63,15 @@ def golfers_list(request):
         'golfers': golfers, #list of all golfers
         'favorites': favorites, #list of favoriites
     })
+'''
+@login_required
+def dashboard(request):
+    #fetch all the golfers from the database
+    golfers = Golfer.objects.all()
+    print(golfers)
+    #pass the golfers to the template
+    return render(request, 'accounts/dashboard.html', {'golfers': golfers})
+    
                 
 
 

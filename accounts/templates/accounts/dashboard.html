@@ -7,9 +7,15 @@
     <body>
         <h2>Welcome to Baker Street</h2>
         <h1>Welcome to your Dashboard, {{ user.username }}!</h1>
+        <!--<pre>{{golfers}}</pre>-->
+        
         <ul>
-            {% for favorite in favorites %}
-                <li>{{ favorite.rank}}: {{ favorite.golfer,name}}</li>
+            {% for golfer in golfers %}
+                <li>
+                    {{ golfer.name }} - {{golfer.get_tier_display}}
+                </li>
+            {% empty %}
+            <li>No golfers found</li>
             {% endfor %}
         </ul>
     </body>

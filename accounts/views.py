@@ -7,7 +7,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from .models import Golfer, FavoriteGolfer
 from .forms import FavoriteGolferForm
-
+from django.core.exceptions import ObjectDoesNotExist
 
 #Here we are using djangos's built in authentication to handle form login, this form will handle authentication
 def login_view(request):
@@ -37,53 +37,56 @@ def signup(request):
 
     return render(request, 'accounts/signup.html', {'form': form})
 
-#Use the login_required decorator to ensure only authnticated users can access the page
-@login_required
-def dashboard(request):
-    return render(request, 'accounts/dashboard.html')
-'''
-@login_required
-def golfers_list(request):
-    #fetch all golfers
-    golfers = Golfer.objects.all()
-    #fetch the users favorite golfers ordered 1-6
-    favorites = FavoriteGolfer.objects.filter(user=request.user).order_by('rank')
-    if request.method == 'POST':
-        for rank in range(1,6):
-            golfer_id = request.POST.get(f'golfer_{rank}') #get golfer id from form
-            if golfer_id:
-                golfer = Golfer.objects.get(id=golfer_id)
-                #Create or update the favorite golfer
-                favorite, created = FavoriteGolfer.objects.get_or_create(user=request.user, rank=rank)
-                favorite.golfer = golfer
-                favorite.save()
-        return render(request, 'accounts:dashboard')
-    
-    return render(request, 'accounts/dashboard.html', {
-        'golfers': golfers, #list of all golfers
-        'favorites': favorites, #list of favoriites
-    })
-'''
+
 @login_required
 def dashboard(request):
     #fetch all the golfers from the database
     golfers = Golfer.objects.all()
-    FavoriteGolfer = None
+    favorite_golfers = FavoriteGolfer.objects.filter(user=request.user)
+    #favoriteGolfer = None
     print(golfers)
     #get the current users fav golfer
-    try:
-        favorite_golfer = FavoriteGolfer.objects.get(user=request.user)
-    except FavoriteGolfer.DoesNotExist:
-        favorite_golfer = None
+    #try:
+    #    favorite_golfer = FavoriteGolfer.objects.get(user=request.user)
+   # except FavoriteGolfer.DoesNotExist:
+     #   favorite_golfer = None
 
-        
+
     #pass the golfers to the template
     return render(request, 'accounts/dashboard.html', {
         'golfers': golfers,
-        'favorite_golfer': FavoriteGolfer #Pass the favorite golfer to the template    
+        'favorite_golfer': favorite_golfers #Pass the favorite golfer to the template    
     })
     
-                
+
+
+@login_required
+def select_favorite_golfers(request):
+    # Get the golfers from the database
+    golfers = Golfer.objects.all()
+
+    if request.method == 'POST':
+        form = FavoriteGolferForm(request.POST)
+        
+        if form.is_valid():
+            # Get the selected golfers from the form
+            selected_golfers = form.cleaned_data['golfers']
+
+            # Delete the existing favorite golfers for the user
+            FavoriteGolfer.objects.filter(user=request.user).delete()
+
+            # Save the new favorite golfers
+            for golfer in selected_golfers:
+                FavoriteGolfer.objects.create(user=request.user, golfer=golfer)
+
+            return redirect('dashboard')  # Redirect back to the dashboard after saving
+    else:
+        form = FavoriteGolferForm()
+
+    return render(request, 'accounts/select_favorite_golfers.html', {
+        'form': form,
+        'golfers': golfers
+    })           
 
 
 

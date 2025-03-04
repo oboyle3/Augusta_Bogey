@@ -7,17 +7,19 @@
     <body>
         <h2>Welcome to Baker Street</h2>
         <h1>Welcome to your Dashboard, {{ user.username }}!</h1>
-        <!--<pre>{{golfers}}</pre>-->
         
-        <ul>
-            {% for golfer in golfers %}
-                <li>
-                    {{ golfer.name }} - {{golfer.get_tier_display}}
-                </li>
-            {% empty %}
-            <li>No golfers found</li>
-            {% endfor %}
-        </ul>
-        <h2>your fav golfer {{ favorite_golfer.golfer.name }}</h2>
+        <h2>Your Top 6 Favorite Golfers</h2>
+        {% if favorite_golfers %}
+            <ul>
+                {% for favorite in favorite_golfers %}
+                    <li>{{ favorite.golfer.name }} - Tier {{ favorite.golfer.get_tier_display }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>You have not selected any favorite golfers yet.</p>
+        {% endif %}
+        
+        <a href="/accounts/select_favorite_golfers/">Select or Update Your Favorite Golfers</a>
+
     </body>
 </html>

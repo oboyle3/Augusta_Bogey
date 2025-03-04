@@ -13,7 +13,8 @@ class Golfer(models.Model):
     tier = models.IntegerField(choices=TIER_CHOICES,default=3)
 
     def __str__(self):
-        return f"{self.name} - Tier {self.tier}"
+        return self.name
+        #return f"{self.name} - Tier {self.tier}"
     
 class FavoriteGolfer(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE) #Link to user model

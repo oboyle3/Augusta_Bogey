@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Select Favorite Golfers</title>
+    </head>
+    <body>
+        <h1>Select Your Top 6 Favorite Golfers</h1>
+        
+        <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Save Favorite Golfers</button>
+        </form>
+        
+        <a href="/accounts/dashboard/">back to dash</a>
+    </body>
+</html>
